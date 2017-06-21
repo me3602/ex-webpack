@@ -1,0 +1,15 @@
+{
+  "name": "ex-webpack",
+  "version": "1.0.0",
+  "description": "webpack demo project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "author": "friday",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^3.0.0"
+  }
+}
