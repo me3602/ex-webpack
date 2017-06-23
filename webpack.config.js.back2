@@ -1,0 +1,141 @@
+const webpack = require('webpack'); //webpack 기본 라이브러리
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin'); // 난독화
+const ExtractTextPlugin = require("extract-text-webpack-plugin"); // CSS 출력
+//const HtmlWebpackPlugin = require('html-webpack-plugin');//html 내에 번들링한 파일 자동 삽입
+
+
+//기본설정
+let config = {
+    // 번들링 할 엔트리
+    // '이름' : ['모듈 명']
+    entry: {
+        'app' : ['./entry/app.js']
+    },
+    // entry 에 따른 output 파일
+    output: {
+        filename: './dist/[name].bundle.js'
+    },
+    resolve: {
+        extensions: ['.js','.css']
+    },
+    //모듈 변경 시 자동 번들링
+    watch: false,
+    //webpack 모듈
+    module: {
+        rules:[
+            //ES6 트랜스파일
+            {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['es2015']
+                    }
+                }
+            },
+            //html 로더
+            /*
+             {
+             test: /\.html$/,
+             loader: 'html-loader'
+             },
+             */
+            // css 로더
+            //js 내에 css를 삽입 시
+            /*
+             {
+             test: /\.css$/,
+             use: [
+             'style-loader',
+             'css-loader'
+             ]
+             }
+             */
+            //css 파일을 따로 생성 시
+            {
+                test:/\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: 'css-loader'
+                })
+            }
+        ]
+    },
+    //플러그인 목록
+    plugins:[
+        //hot reload 모듈
+        new webpack.HotModuleReplacementPlugin({
+            //options
+        }),
+        //webpack 내에서 require 없이 사용 가능
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            _:'lodash'
+        }),
+        /*css*/
+        new ExtractTextPlugin({
+            filename: "./dist/css/[name].bundle.css",
+            allChunks: true
+        }),
+        //난독화 플러그인
+        /* new UglifyJSPlugin({
+         compress: {
+         warnings: false
+         },//최적화 사용 여부, true, false 외에 여러가지 옵션 존재
+         mangle:false,// 문자 압축 여부
+         beautify:false // 직렬화 여부(true 가 안 하는 것)
+         }),*/
+        //공통부분을 묶어 chunk로 만듬
+        new webpack.optimize.CommonsChunkPlugin({
+            names:["vend"],
+            filename: "./dist/[name].bundle.js",
+            chunks:['jqeury','lodash']
+        }),
+    ],
+    //개발서버(주로 hot reload 기능 이용 시 사용)
+    devServer: {
+        hot: true, // Tell the dev-server we're using HMR
+        contentBase: './test',
+        publicPath: '/',
+        port: 3000
+    }
+};
+
+// 개발서버 구동 시는 conf[0].entry를 참조하므로
+// 설정 하나만 exports 해야함
+module.exports = config;
+
+//추가설정
+
+/*
+
+let fridayConfig = Object.assign({},config,{
+    name: "friday",
+    output: {
+        path: 'D:\\01.source\\friday\\assets\\js\\dist',
+        filename: '[name].bundle.js'
+    }
+});
+
+//html 내 자동 삽입
+
+ fridayConfig.plugins.push(
+ new HtmlWebpackPlugin({
+ title: '타이틀',
+ // template: './template/template.ejs',
+ templateContent: function(templateParams, webpackCompiler){
+ return '';
+ },
+ filename : '../../../application/views/template/commonJS.html',
+ })
+ );
+
+
+//번들링할 설정 배열
+
+module.exports = [
+ config,fridayConfig
+ ];
+ */
