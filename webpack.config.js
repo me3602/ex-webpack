@@ -41,13 +41,15 @@ let config = {
         new webpack.HotModuleReplacementPlugin({
             //options
         }),
-        /* new UglifyJSPlugin({
+        /*
+        new UglifyJSPlugin({
          compress: {
-         warnings: false
+            warnings: false
          },//최적화 사용 여부, true, false 외에 여러가지 옵션 존재
-         mangle:false,// 문자 압축 여부
+         mangle:true,// 문자 압축 여부
          beautify:false // 직렬화 여부(true 가 안 하는 것)
-         }),*/
+         }),
+         */
         //chunk
         new CommonsChunkPlugin({
             //chunks의 공통부분을 묶어 파일 생성
